@@ -13,42 +13,12 @@
                                             {port: 8001, rememberTransport: false});
     socketio_sever.connect();
 
-
-function on_write_old(e) {
-    var keynum;
-    var keychar;
-    var new_value;
-
-    if(window.event) // IE
-        keynum = e.keyCode;
-    else if(e.which) // Netscape/Firefox/Opera
-        keynum = e.which;
-    
-    keychar = String.fromCharCode(keynum);
-    current_value = document.getElementById("chatbox").value;
-    
-    // Don't add backspaces
-    if (keynum != 8)
-        new_value = current_value + keychar;  
-    else
-        new_value = current_value.slice(0, -1);
-        
-    document.getElementById("chatbox").value = new_value;
-    
-    socketio_sever.send(keychar);
-    
-    return keychar;
-
-//<input id="input" type="text" onkeypress="on_write(event)"/>
-//<input id="chatbox" type="text"/>
     
 }
 
 
 function on_write(e) {
-    update();
-    //<textarea id="input" rows="10" cols="30" onkeypress="on_write(event)"> </textarea>
-     
+    update();     
 }
 
 function update(){
