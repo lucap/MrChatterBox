@@ -18,21 +18,32 @@ participants = set()
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html", user_id="1")
+        self.render("index.html", user_id=len(participants))
 
 class SocketIOConnection(tornadio.SocketConnection):
 
     def on_open(self, *args, **kwargs):
         print "New Client"
+        
+        if participants:
+            for i in range(len(participants)-1):
+                print i
+                message = ["new_client", i]
+                self.send(message)
+        
+        message = ["new_client", len(participants)]
+        for p in participants:
+            p.send(simplejson.dumps(message))
+            
         participants.add(self)
 
     def on_close(self):
         participants.remove(self)
         
     def on_message(self, message):
-        print str(message).split(" ")
+        user_id, text = message.split(" ", 1)
         for p in participants:
-            p.send(simplejson.dumps(message))
+            p.send(simplejson.dumps([user_id, text]))
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
     <head>
         <script src="./static/socket.io.js"></script>
         <script>WEB_SOCKET_SWF_LOCATION="./static/WebSocketMain.swf"</script>
+        <script language="javascript" type="text/javascript" src="./static/jquery.js"></script>
         <script>USER_ID={{user_id}}</script>
     </head> 
     <body>    
@@ -19,20 +20,25 @@
         function update(){
             content = document.getElementById("input").value;
             message = USER_ID + " " + content;
-            console.log(message);
+            //console.log(message);
             socketio_sever.send(message);
         }
 
         socketio_sever.addEvent('message', function(new_message) {
             console.log(new_message);
             new_message = JSON.parse(new_message);
-            document.getElementById("chatbox").value = new_message;
+            console.log(new_message);
+            if (new_message[0] == "new_client")
+                $(".container").append("<textarea id='" + new_message[1] + "' rows='10' cols='30'></textarea>");
+            else
+                document.getElementById(new_message[0]).value = new_message[1];
     
         });
         </script>
-    
-        <textarea id="input" rows="10" cols="30" onkeyup="on_write(event)"></textarea>
-        <textarea id="chatbox" rows="10" cols="30"> </textarea>
+        
+        <div class="container">
+            <textarea id="input" rows="10" cols="30" onkeyup="on_write(event)"></textarea>
+        </div>
 
     </body>
 </html>
