@@ -12,10 +12,14 @@
         socketio_sever.connect();
 
         function on_write(e) {
-            update();     
+            console.log(e);
+            console.log(e.target.id);
+            console.log(e.srcElement.id);
+            console.log(this.id);
+            update(e.target.id);     
         }
 
-        function update(){
+        function update(elment_id){
             content = document.getElementById("input").value;
             socketio_sever.send(content);
         }
