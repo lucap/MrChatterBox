@@ -38,7 +38,7 @@
                 $(".container").append("<textarea id='" + new_message[1] + "' rows='10' cols='30' readonly='readonly'></textarea>");
             else if (new_message[0] == "remove_client")
                 $("#" + new_message[1]).remove();
-            else
+            else if ($('#'+new_message[0]).length)
                 document.getElementById(new_message[0]).value = new_message[1];
     
         });
