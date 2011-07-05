@@ -13,6 +13,12 @@
                                         {port: 8001, rememberTransport: false});
         socketio_sever.connect();
 
+        for (var i=0; i<=USER_ID ;i++)
+        {
+            console.log(i);
+            $(".container").append("<textarea id='" + i + "' rows='10' cols='30'></textarea>");
+        }
+
         function on_write(e) {
             update();     
         }

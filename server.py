@@ -13,42 +13,37 @@ import tornadio.server
 
 ROOT = op.normpath(op.dirname(__file__))
 
-participants = {}
-new_user = 0
+participants = set()
+
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        new_user = len(participants)
-        self.render("index.html", user_id=new_user)
+        self.render("index.html", user_id=len(participants))
 
 class SocketIOConnection(tornadio.SocketConnection):
-
-    def __init__(self, *args, **kwargs):
-        tornadio.SocketConnection.__init__(self, *args, **kwargs)
-        self.user_id = new_user
 
     def on_open(self, *args, **kwargs):
         print "New Client"
         
-        if participants:
-            for user_id,participant in participants.iteritems():
-                message = ["new_client", user_id]
-                self.send(simplejson.dumps(message))
+        for i in range(len(participants)):
+            print i
+            message = ["new_client", i]
+            self.send(simplejson.dumps(message))
         
-        message = ["new_client", new_user]
-        for user_id,participant in participants.iteritems():
-            participant.send(simplejson.dumps(message))
+        message = ["new_client", len(participants)]
+        for p in participants:
+            p.send(simplejson.dumps(message))
             
-        participants[new_user] = self
+        participants.add(self)
 
     def on_close(self):
-        del participants[self.user_id]
-        #participants.remove(self)
+        participants.remove(self)
         
     def on_message(self, message):
         user_id, text = message.split(" ", 1)
-        for user_id,participant in participants.iteritems():
-            participant.send(simplejson.dumps([user_id, text]))
+        for p in participants:
+            if p != self:
+                p.send(simplejson.dumps([user_id, text]))
 
 
 if __name__ == "__main__":
