@@ -2,26 +2,25 @@
     <head>
         <script src="http://cdn.socket.io/stable/socket.io.js"></script>
         <script>WEB_SOCKET_SWF_LOCATION = 'http://cdn.socket.io/stable/WebSocketMain.swf';</script>
+        <script>USER_ID={{user_id}};</script>
     </head> 
     <body>    
         <script type="text/javascript">
 
         var socketio_sever;
         socketio_sever = new io.Socket(window.location.hostname,
-                                            {port: 8001, rememberTransport: false});
+                                        {port: 8001, rememberTransport: false});
         socketio_sever.connect();
 
         function on_write(e) {
-            console.log(e);
-            console.log(e.target.id);
-            console.log(e.srcElement.id);
-            console.log(this.id);
-            update(e.target.id);     
+            update();     
         }
 
-        function update(elment_id){
+        function update(){
             content = document.getElementById("input").value;
-            socketio_sever.send(content);
+            message = USER_ID + " " + content;
+            console.log(message);
+            socketio_sever.send(message);
         }
 
         socketio_sever.addEvent('message', function(new_message) {

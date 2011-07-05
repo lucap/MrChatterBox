@@ -18,7 +18,7 @@ participants = set()
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("index.html")
+        self.render("index.html", user_id="1")
 
 class SocketIOConnection(tornadio.SocketConnection):
 
@@ -30,7 +30,7 @@ class SocketIOConnection(tornadio.SocketConnection):
         participants.remove(self)
         
     def on_message(self, message):
-        print message
+        print str(message).split(" ")
         for p in participants:
             p.send(simplejson.dumps(message))
 
