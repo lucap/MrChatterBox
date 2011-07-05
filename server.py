@@ -13,7 +13,7 @@ import tornadio.server
 
 ROOT = op.normpath(op.dirname(__file__))
 
-participants = set()
+participants = []
 
 
 class IndexHandler(tornado.web.RequestHandler):
@@ -34,10 +34,13 @@ class SocketIOConnection(tornadio.SocketConnection):
         for p in participants:
             p.send(simplejson.dumps(message))
             
-        participants.add(self)
+        participants.append(self)
 
     def on_close(self):
+        message = ["remove_client", participants.index(self)]
         participants.remove(self)
+        for p in participants:
+            p.send(simplejson.dumps(message))
         
     def on_message(self, message):
         user_id, text = message.split(" ", 1)
