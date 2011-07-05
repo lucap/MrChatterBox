@@ -35,7 +35,7 @@
             new_message = JSON.parse(new_message);
             console.log(new_message);
             if (new_message[0] == "new_client")
-                $(".container").append("<textarea id='" + new_message[1] + "' rows='10' cols='30'></textarea>");
+                $(".container").append("<textarea id='" + new_message[1] + "' rows='10' cols='30' readonly='readonly'></textarea>");
             else
                 document.getElementById(new_message[0]).value = new_message[1];
     
