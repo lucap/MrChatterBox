@@ -1,48 +1,35 @@
 <html>
-<head>
-    <script src="http://cdn.socket.io/stable/socket.io.js"></script>
-    <script>WEB_SOCKET_SWF_LOCATION = 'http://cdn.socket.io/stable/WebSocketMain.swf';</script>
-</head> 
-<body>
-    
-    
-<script type="text/javascript">
+    <head>
+        <script src="http://cdn.socket.io/stable/socket.io.js"></script>
+        <script>WEB_SOCKET_SWF_LOCATION = 'http://cdn.socket.io/stable/WebSocketMain.swf';</script>
+    </head> 
+    <body>    
+        <script type="text/javascript">
 
-    var socketio_sever;
-    socketio_sever = new io.Socket(window.location.hostname,
+        var socketio_sever;
+        socketio_sever = new io.Socket(window.location.hostname,
                                             {port: 8001, rememberTransport: false});
-    socketio_sever.connect();
+        socketio_sever.connect();
 
+        function on_write(e) {
+            update();     
+        }
+
+        function update(){
+            content = document.getElementById("input").value;
+            socketio_sever.send(content);
+        }
+
+        socketio_sever.addEvent('message', function(new_message) {
+            console.log(new_message);
+            new_message = JSON.parse(new_message);
+            document.getElementById("chatbox").value = new_message;
     
-}
+        });
+        </script>
+    
+        <textarea id="input" rows="10" cols="30" onkeyup="on_write(event)"></textarea>
+        <textarea id="chatbox" rows="10" cols="30"> </textarea>
 
-
-function on_write(e) {
-    update();     
-}
-
-function update(){
-    content = document.getElementById("input").value;
-    socketio_sever.send(content);
-}
-
-socketio_sever.addEvent('message', function(new_message) {
-    console.log(new_message);
-    new_message = JSON.parse(new_message);
-    document.getElementById("chatbox").value = new_message;
-
-});
-
-
-</script>
-
-<form>
-
-
-</form>
-
-<textarea id="input" rows="10" cols="30" onkeyup="on_write(event)"></textarea>
-<textarea id="chatbox" rows="10" cols="30"> </textarea>
-
-</body>
+    </body>
 </html>
