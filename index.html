@@ -1,0 +1,78 @@
+<html>
+<head>
+    <script src="http://cdn.socket.io/stable/socket.io.js"></script>
+    <script>WEB_SOCKET_SWF_LOCATION = 'http://cdn.socket.io/stable/WebSocketMain.swf';</script>
+</head> 
+<body>
+    
+    
+<script type="text/javascript">
+
+    var socketio_sever;
+    socketio_sever = new io.Socket(window.location.hostname,
+                                            {port: 8001, rememberTransport: false});
+    socketio_sever.connect();
+
+
+function on_write_old(e) {
+    var keynum;
+    var keychar;
+    var new_value;
+
+    if(window.event) // IE
+        keynum = e.keyCode;
+    else if(e.which) // Netscape/Firefox/Opera
+        keynum = e.which;
+    
+    keychar = String.fromCharCode(keynum);
+    current_value = document.getElementById("chatbox").value;
+    
+    // Don't add backspaces
+    if (keynum != 8)
+        new_value = current_value + keychar;  
+    else
+        new_value = current_value.slice(0, -1);
+        
+    document.getElementById("chatbox").value = new_value;
+    
+    socketio_sever.send(keychar);
+    
+    return keychar;
+
+//<input id="input" type="text" onkeypress="on_write(event)"/>
+//<input id="chatbox" type="text"/>
+    
+}
+
+
+function on_write(e) {
+    update();
+    //<textarea id="input" rows="10" cols="30" onkeypress="on_write(event)"> </textarea>
+     
+}
+
+function update(){
+    content = document.getElementById("input").value;
+    socketio_sever.send(content);
+}
+
+socketio_sever.addEvent('message', function(new_message) {
+    console.log(new_message);
+    new_message = JSON.parse(new_message);
+    document.getElementById("chatbox").value = new_message;
+
+});
+
+
+</script>
+
+<form>
+
+
+</form>
+
+<textarea id="input" rows="10" cols="30" onkeyup="on_write(event)"></textarea>
+<textarea id="chatbox" rows="10" cols="30"> </textarea>
+
+</body>
+</html>
