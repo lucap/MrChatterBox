@@ -53,12 +53,12 @@ class ChatRoomHandler(tornado.web.RequestHandler):
         if username and username not in client_names:
             self.render("chatroom.html", username=username)
         else:
-            self.render("portal.html")
+            self.render("lobby.html")
         
         
-class PortalHandler(tornado.web.RequestHandler):
+class LobbyHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("portal.html")
+        self.render("lobby.html")
 
 
 class SocketIOConnection(tornadio.SocketConnection):
@@ -109,8 +109,8 @@ if __name__ == "__main__":
     # Configure the Tornado application
     application = tornado.web.Application(
         [(r"/favicon.ico", tornado.web.StaticFileHandler, {"path":static_path}),
-        (r"/", PortalHandler),
-        (r"/portal.html", PortalHandler),
+        (r"/", LobbyHandler),
+        (r"/lobby.html", LobbyHandler),
         (r"/chatroom.html", ChatRoomHandler),
         SocketIOConnectionRouter.route()],
         static_path = static_path,
