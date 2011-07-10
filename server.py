@@ -45,12 +45,18 @@ class ClientCollection:
             if name != omitt_name:
                 clients.append((name, client))
         return clients
-        
+    
+    def get_client_names(self):
+        return self.users.keys()
         
 class ChatRoomHandler(tornado.web.RequestHandler):
     def get(self):
-        username = self.get_argument("username", default="not-set", strip=True)
-        self.render("chatroom.html", username=username)
+        username = self.get_argument("username", default=None, strip=True)
+        client_names = ClientCollection.instance().get_client_names()
+        if username and username not in client_names:
+            self.render("chatroom.html", username=username)
+        else:
+            self.render("portal.html")
         
         
 class PortalHandler(tornado.web.RequestHandler):
