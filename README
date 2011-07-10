@@ -1,3 +1,6 @@
+Demo should be running here:
+http://touspassagers.com:8001/
+
 Dependencies:
 - Python 2.6+
 - Tornado Web http://www.tornadoweb.org
