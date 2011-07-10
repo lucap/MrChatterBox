@@ -11,28 +11,36 @@
         socketio_sever = new io.Socket(window.location.hostname,
                                         {port: 8001, rememberTransport: false});
         socketio_sever.connect();
+        // Broadcast the presence of a new client
         socketio_sever.send({"new_user": username});
 
         function on_write(e) {
+            // Every time a key is release, we send the entire content of the
+            // text box along with the username
             content = document.getElementById("input").value;
             message = {"new_message": {"username": username, "content": content}};
-            console.log(message)
             socketio_sever.send(message);   
         }
 
         socketio_sever.addEvent('message', function(message) {
-            console.log(message);
             
+            // A new client is connected
             if (message.new_client != null) {
+                // Add a new textarea to the container
                 element = "<textarea id='" + message.new_client + "' rows='10' cols='30' readonly='readonly'></textarea>";
                 $(".container").append(element);
             }
+            // A new chat message has arrived
             else if (message.new_message != null) {
-                sender= message.new_message.username;
+                sender = message.new_message.username;
                 content = message.new_message.content;
-                document.getElementById(sender).value = content;
+                // Make sure the element exists before writing to it
+                if ($('#'+sender).length)
+                    document.getElementById(sender).value = content;
             }
+            // A client has disconnected
             else if (message.remove_client != null) {
+                // So remore the corresponding textarea element
                 $("#" + message.remove_client).remove();
             }
             

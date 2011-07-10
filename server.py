@@ -1,19 +1,14 @@
-import urllib
-import time
-import random
-import simplejson
+import logging
 from os import path as op
 
 import tornado.web
-import tornado.httpclient
 import tornadio
-import tornadio.router
 import tornadio.server
 
-ROOT = op.normpath(op.dirname(__file__))
-        
+FLASH_POLICY_PORT = 843
+WEB_SERVER_PORT = 8001
+
 class ClientCollection:
-    
     @classmethod
     def instance(cls):
         if not hasattr(cls, "_instance"):
@@ -32,7 +27,6 @@ class ClientCollection:
         if name not in self.users:
             self.users[name] = client
             success = True
-            
         return success
     
     def remove(self, name):
@@ -49,10 +43,13 @@ class ClientCollection:
     def get_client_names(self):
         return self.users.keys()
         
+        
 class ChatRoomHandler(tornado.web.RequestHandler):
     def get(self):
         username = self.get_argument("username", default=None, strip=True)
         client_names = ClientCollection.instance().get_client_names()
+        
+        # Make sure the username doesn't already exist
         if username and username not in client_names:
             self.render("chatroom.html", username=username)
         else:
@@ -65,13 +62,12 @@ class PortalHandler(tornado.web.RequestHandler):
 
 
 class SocketIOConnection(tornadio.SocketConnection):
-
     def __init__(self, *args, **kwargs):
         tornadio.SocketConnection.__init__(self, *args, **kwargs)
         self.username = None
 
     def on_open(self, *args, **kwargs):
-        print "New Client"
+        pass
 
     def on_close(self):
         client_collection = ClientCollection.instance()
@@ -82,7 +78,6 @@ class SocketIOConnection(tornadio.SocketConnection):
         client_collection.remove(self.username)
         
     def on_message(self, message):
-        print message
         client_collection = ClientCollection.instance()
         
         if "new_user" in message:
@@ -91,10 +86,10 @@ class SocketIOConnection(tornadio.SocketConnection):
             clients = client_collection.get_clients(username)
             
             for name, client in clients:
-                # Add existing clients to this current one
+                # Add existing clients to this new one
                 self.send({"new_client": name})
                 
-                # Send the the current new client to all existing ones
+                # Send this new client to all existing ones
                 client.send({"new_client": username})
             self.username = username
             
@@ -103,28 +98,29 @@ class SocketIOConnection(tornadio.SocketConnection):
             for name, client in clients:
                 client.send(message)
 
+
 if __name__ == "__main__":
-    import logging
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.WARNING)
+    root_dir = op.normpath(op.dirname(__file__))
+    
     SocketIOConnectionRouter = tornadio.get_router(SocketIOConnection)
 
-    #configure the Tornado application
+    # Configure the Tornado application
     application = tornado.web.Application(
         [(r"/", PortalHandler),
         (r"/portal.html", PortalHandler),
         (r"/chatroom.html", ChatRoomHandler),
         SocketIOConnectionRouter.route()],
-        static_path = op.join(ROOT, "static"),
+        static_path = op.join(root_dir, "static"),
         enabled_protocols = ['websocket',
                              'flashsocket',
                              'xhr-multipart',
                              'xhr-polling'],
-        flash_policy_port = 843,
-        flash_policy_file = op.join(ROOT, 'flashpolicy.xml'),
-        socket_io_port = 8001,
-        
+        flash_policy_port = FLASH_POLICY_PORT,
+        flash_policy_file = op.join(root_dir, 'flashpolicy.xml'),
+        socket_io_port = WEB_SERVER_PORT,
     )
+    
     tornadio.server.SocketServer(application)
-    io_loop = tornado.ioloop.IOLoop.instance()
-    io_loop.start()
+    tornado.ioloop.IOLoop.instance().start()
 
