@@ -1,1 +1,6 @@
+Know issues:
+- When text goes oveflows the chat box, other clients will not see it anymore
+- User names are not displayed
+
+On to run on CentOS with python2.7:
 sudo /opt/python27/bin/python2.7 server.py
