@@ -1,4 +1,9 @@
-Know issues:
+Dependencies:
+- Python 2.6+
+- Tornado Web http://www.tornadoweb.org
+- TornadIO https://github.com/MrJoes/tornadio
+
+Known issues:
 - When text goes oveflows the chat box, other clients will not see it anymore
 - User names are not displayed
 
