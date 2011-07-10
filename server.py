@@ -119,7 +119,7 @@ if __name__ == "__main__":
                              'xhr-multipart',
                              'xhr-polling'],
         flash_policy_port = FLASH_POLICY_PORT,
-        flash_policy_file = op.join(root_dir, 'flashpolicy.xml'),
+        flash_policy_file = op.join(static_path, 'flashpolicy.xml'),
         socket_io_port = WEB_SERVER_PORT,
     )
     
