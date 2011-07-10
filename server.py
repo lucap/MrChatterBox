@@ -102,16 +102,18 @@ class SocketIOConnection(tornadio.SocketConnection):
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.WARNING)
     root_dir = op.normpath(op.dirname(__file__))
+    static_path = op.join(root_dir, "static")
     
     SocketIOConnectionRouter = tornadio.get_router(SocketIOConnection)
 
     # Configure the Tornado application
     application = tornado.web.Application(
-        [(r"/", PortalHandler),
+        [(r"/favicon.ico", tornado.web.StaticFileHandler, {"path":static_path}),
+        (r"/", PortalHandler),
         (r"/portal.html", PortalHandler),
         (r"/chatroom.html", ChatRoomHandler),
         SocketIOConnectionRouter.route()],
-        static_path = op.join(root_dir, "static"),
+        static_path = static_path,
         enabled_protocols = ['websocket',
                              'flashsocket',
                              'xhr-multipart',
