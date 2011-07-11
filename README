@@ -1,4 +1,4 @@
-Demo should be running here:
+A live demo should be running here:
 http://touspassagers.com:8001/
 
 Dependencies:
@@ -7,7 +7,7 @@ Dependencies:
 - TornadIO https://github.com/MrJoes/tornadio
 
 Known issues:
-- When text goes oveflows the chat box, other clients will not see it anymore
+- When text oveflows the chat box, other clients will not see it anymore
 - User names are not displayed
 
 How to run on CentOS with python2.7:
